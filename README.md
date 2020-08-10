@@ -28,12 +28,17 @@ jobs:
     - name: jobname
       plan:
           - get: ...
-          - task: do_smth
-            ...
+          - task: prepare_release
+            outputs:
+                - name: rel
+            run: |
+                echo "v0.0.1" > rel/tag.txt
+                echo "Release Title" > rel/release_name.txt
+                echo "Some descriptive text of this release" > rel/body.txt
           - put: release
             params:
-                name: Release Title
-                tag: v0.0.1
-                body: Some descriptive text of this release
+                name: rel/release_name.txt
+                tag: rel/tag.txt
+                body: rel/body.txt
                 files_glob: ./**/*.tgz
 ```
