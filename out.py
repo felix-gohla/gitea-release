@@ -7,7 +7,11 @@ import json
 import sys
 import os
 
+def absolute_path_from(maybe_absolute, absolute_prefix):
+    return maybe_absolute if os.path.isabs(maybe_absolute) else os.path.join(absolute_prefix, maybe_absolute)
+
 def main(path):
+    os.chdir(path)
     doc = json.load(sys.stdin)
 
     # Configure API key authorization: AccessToken
@@ -26,22 +30,22 @@ def main(path):
     repo = doc["source"]["repository"]
     # read configuration from file
     try:
-        with open(doc["params"]["tag"], 'r') as tag_file:
-            tag_name = tag_file.read()
-            print("Tag Name: {}".format(tag_name), file=sys.stderr)
+        with open(absolute_path_from(doc["params"]["tag"], path), 'r') as tag_file:
+            tag_name = tag_file.read().strip()
 
-        with open(doc["params"]["name"], 'r') as name_file:
-            release_name = name_file.read()
-            print("Release name: {}".format(release_name), file=sys.stderr)
+        with open(absolute_path_from(doc["params"]["name"], path), 'r') as name_file:
+            release_name = name_file.read().strip()
 
-        with open(doc["params"]["body"], 'r') as body_file:
-            release_body = body_file.read()
-            print("Release body: {}".format(release_body), file=sys.stderr)
+        with open(absolute_path_from(doc["params"]["body"], path), 'r') as body_file:
+            release_body = body_file.read().strip()
 
     except IOError as e:
         print("Exception loading release configuration: {}".format(e), file=sys.stderr)
         sys.exit(-1)
 
+    print("Tag Name: {}".format(tag_name), file=sys.stderr)
+    print("Release name: {}".format(release_name), file=sys.stderr)
+    print("Release body: {}".format(release_body), file=sys.stderr)
     release_option = giteapy.CreateReleaseOption(name=release_name, tag_name=tag_name, body=release_body)
     try:
         api_response = api_instance.repo_create_release(owner, repo, body=release_option)
@@ -53,7 +57,7 @@ def main(path):
         sys.exit(-1)
 
     # Upload all given files
-    files_glob = doc["params"]["files_glob"] if os.path.isabs(doc["params"]["files_glob"]) else os.path.join(path, doc["params"]["files_glob"])
+    files_glob = absolute_path_from(doc["params"]["files_glob"], path)
     files_to_upload = glob.glob(files_glob)
     for name in files_to_upload:
         attachment = name 
