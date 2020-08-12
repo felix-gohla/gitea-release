@@ -52,6 +52,7 @@ def main(path):
         release_id = api_response.id
         created = api_response.created_at
         release_url = api_response.url
+        print("Created release with id {} ({}).".format(release_id, release_url), file=sys.stderr)
     except ApiException as e:
         print("Exception when calling RepositoryApi->repo_create_release: %s\n" % e, file=sys.stderr)
         sys.exit(-1)
