@@ -16,7 +16,7 @@ def main(path):
 
     # Configure API key authorization: AccessToken
     configuration = giteapy.Configuration()
-    configuration.username = doc["source"]["owner"]
+    configuration.username = doc["source"]["username"]
     configuration.password = doc["source"]["access_token"]
     configuration.host = doc["source"]["base_url"]
 

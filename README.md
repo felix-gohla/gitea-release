@@ -20,7 +20,8 @@ resources:
       type: gitea-release
       source:
           base_url: http://gitea:3000/api/v1 # api/v1 is necessary
-          owner: frank
+          owner: frank # The user that owns the repository.
+          username: frank # The user that creates the release.
           repository: repos_name # without .git or anything
           access_token: ((access_token)) # access token can be passed via the `--load-vars-from` fly option in `set-pipeline`
 
